@@ -1,43 +1,36 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(helmet());
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/health', (req, res) => {
   res.status(200).json({
-    status: 'ok',
+    status: 'OK',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    uptime: process.uptime()
   });
 });
 
 app.use((req, res) => {
   res.status(404).json({
     error: 'Not Found',
-    message: '요청한 리소스를 찾을 수 없습니다'
+    message: `Cannot ${req.method} ${req.path}`,
+    path: req.path
   });
 });
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
-    error: err.name || 'Internal Server Error',
-    message: err.message || '서버 오류가 발생했습니다'
+    error: err.message || 'Internal Server Error',
+    status: err.status || 500
   });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
 });
 
 module.exports = app;
