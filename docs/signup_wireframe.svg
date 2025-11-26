@@ -1,0 +1,61 @@
+<svg width="420" height="680" viewBox="0 0 420 680" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+      .font { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+      .heavy { font-weight: 800; }
+      .bold { font-weight: 700; }
+      .semi-bold { font-weight: 600; }
+      .medium { font-weight: 500; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#F9FAFB"/>
+
+  <!-- Main Card -->
+  <g transform="translate(30, 40)">
+    <!-- Header -->
+    <text x="120" y="30" class="font heavy" font-size="22" fill="#111827">Jan TodoList</text>
+    
+    <text x="0" y="90" class="font bold" font-size="28" fill="#111827">회원가입</text>
+    <text x="0" y="115" class="font" font-size="15" fill="#4B5563">새로운 계정을 만들어 할일을 관리하세요.</text>
+
+    <!-- Form -->
+    <g transform="translate(0, 160)">
+      <!-- Email Input -->
+      <text x="0" y="0" class="font semi-bold" font-size="14" fill="#374151">이메일 주소</text>
+      <rect x="0" y="12" width="360" height="48" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1.5"/>
+      <text x="15" y="42" class="font" font-size="15" fill="#374151">minjun.kim@example.com</text>
+
+      <!-- Password Input -->
+      <text x="0" y="90" class="font semi-bold" font-size="14" fill="#374151">비밀번호</text>
+      <rect x="0" y="102" width="360" height="48" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1.5"/>
+      <text x="15" y="132" class="font" font-size="20" fill="#374151">••••••••••••</text>
+      <!-- Eye Icon -->
+      <g transform="translate(325, 117)" stroke="#6B7280" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </g>
+      <text x="0" y="165" class="font" font-size="13" fill="#6B7280">* 8자 이상 입력해주세요.</text>
+      
+      <!-- Name Input -->
+      <text x="0" y="210" class="font semi-bold" font-size="14" fill="#374151">이름</text>
+      <rect x="0" y="222" width="360" height="48" rx="8" fill="#FFFFFF" stroke="#3B82F6" stroke-width="1.5"/>
+      <rect x="345" y="234" width="2" height="24" fill="#3B82F6" />
+      <text x="15" y="252" class="font" font-size="15" fill="#374151">김민준</text>
+      <title>활성화된 입력 필드 예시</title>
+
+      <!-- Signup Button -->
+      <rect x="0" y="300" width="360" height="50" rx="8" fill="#3B82F6"/>
+      <text x="145" y="331" class="font bold" font-size="16" fill="#FFFFFF">가입하기</text>
+      <title>가입하기 버튼</title>
+      
+      <!-- Login Link -->
+      <text x="70" y="380" class="font semi-bold" font-size="14" fill="#4B5563">
+        이미 계정이 있나요?
+        <tspan fill="#3B82F6" class="bold">로그인 →</tspan>
+      </text>
+    </g>
+  </g>
+</svg>
