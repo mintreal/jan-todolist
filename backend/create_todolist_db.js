@@ -86,9 +86,14 @@ async function createDatabaseAndSchema() {
       `);
 
       console.log('✅ Trigger created successfully');
-      
+
     } catch (dbError) {
-      console.error('❌ Error with database operations:', dbError.message);
+      // Handle the case where the trigger already exists
+      if (dbError.message.includes('already exists')) {
+        console.log('ℹ️  Trigger already exists, continuing...');
+      } else {
+        console.error('❌ Error with database operations:', dbError.message);
+      }
     } finally {
       await dbClient.end();
     }

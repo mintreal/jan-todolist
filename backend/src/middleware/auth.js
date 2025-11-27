@@ -6,23 +6,17 @@ const { verify } = require('../utils/jwtToken');
  * req.user에 사용자 정보를 저장
  */
 const authenticateToken = (req, res, next) => {
-  // Authorization 헤더에서 토큰 추출 (형식: "Bearer <token>")
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // "Bearer TOKEN"에서 TOKEN 부분 추출
+  const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({ error: 'Access token required' });
   }
 
   try {
-    // 토큰 검증
     const decoded = verify(token);
-    
-    // req.user에 사용자 정보 저장
     req.user = decoded;
-    
-    // 다음 미들웨어로 진행
-    next();
+    return next();
   } catch (error) {
     if (error.message === 'Invalid token') {
       return res.status(403).json({ error: 'Invalid or expired token' });
@@ -32,6 +26,4 @@ const authenticateToken = (req, res, next) => {
   }
 };
 
-module.exports = {
-  authenticateToken
-};
+module.exports = authenticateToken;

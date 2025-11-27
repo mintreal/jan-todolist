@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const jwtConfig = require('../config/jwt');
+const jwt = require("jsonwebtoken");
+const jwtConfig = require("../config/jwt");
 
 /**
  * JWT 토큰 생성 함수
@@ -19,11 +19,12 @@ const verify = (token) => {
   try {
     return jwt.verify(token, jwtConfig.secret);
   } catch (error) {
-    throw new Error('Invalid token');
+    throw new Error("Invalid token");
   }
 };
 
 module.exports = {
   sign,
-  verify
+  verify,
 };
+2;
