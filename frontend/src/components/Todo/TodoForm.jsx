@@ -9,15 +9,22 @@ function TodoForm({ onAdd }) {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      is_all_day: true,
+    },
+  });
+
+  const isAllDay = watch('is_all_day', true);
 
   const onSubmit = async (data) => {
     try {
       setError('');
       setIsLoading(true);
       await onAdd(data);
-      reset();
+      reset({ is_all_day: true });
     } catch (err) {
       setError(err.message || '할일 추가에 실패했습니다');
     } finally {
@@ -60,21 +67,53 @@ function TodoForm({ onAdd }) {
         </div>
 
         <div>
-          <label htmlFor="due_date" className="block text-sm font-medium text-gray-700 mb-1">
-            기한
+          <label className="flex items-center gap-2 mb-3">
+            <input
+              type="checkbox"
+              {...register('is_all_day')}
+              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+              disabled={isLoading}
+            />
+            <span className="text-sm font-medium text-gray-700">하루종일</span>
           </label>
-          <input
-            id="due_date"
-            type="date"
-            {...register('due_date', {
-              required: '기한을 선택해주세요',
-            })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            disabled={isLoading}
-          />
-          {errors.due_date && (
-            <p className="mt-1 text-sm text-red-600">{errors.due_date.message}</p>
-          )}
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="start_date" className="block text-sm font-medium text-gray-700 mb-1">
+              {isAllDay ? '시작 날짜' : '시작 날짜/시간'}
+            </label>
+            <input
+              id="start_date"
+              type={isAllDay ? 'date' : 'datetime-local'}
+              {...register('start_date', {
+                required: '시작 날짜를 선택해주세요',
+              })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              disabled={isLoading}
+            />
+            {errors.start_date && (
+              <p className="mt-1 text-sm text-red-600">{errors.start_date.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="end_date" className="block text-sm font-medium text-gray-700 mb-1">
+              {isAllDay ? '종료 날짜' : '종료 날짜/시간'}
+            </label>
+            <input
+              id="end_date"
+              type={isAllDay ? 'date' : 'datetime-local'}
+              {...register('end_date', {
+                required: '종료 날짜를 선택해주세요',
+              })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              disabled={isLoading}
+            />
+            {errors.end_date && (
+              <p className="mt-1 text-sm text-red-600">{errors.end_date.message}</p>
+            )}
+          </div>
         </div>
 
         {error && (

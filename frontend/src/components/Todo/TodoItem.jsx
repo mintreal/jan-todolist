@@ -4,7 +4,9 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(todo.title);
-  const [editDueDate, setEditDueDate] = useState(todo.due_date || '');
+  const [editIsAllDay, setEditIsAllDay] = useState(todo.is_all_day);
+  const [editStartDate, setEditStartDate] = useState(todo.start_date || '');
+  const [editEndDate, setEditEndDate] = useState(todo.end_date || '');
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -41,11 +43,13 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
   };
 
   const handleSave = async () => {
-    if (editTitle.trim() && editTitle !== todo.title || editDueDate !== (todo.due_date || '')) {
+    if (editTitle.trim()) {
       try {
         await onUpdate(todo.id, {
           title: editTitle.trim(),
-          due_date: editDueDate || null,
+          is_all_day: editIsAllDay,
+          start_date: editStartDate,
+          end_date: editEndDate,
           is_completed: todo.is_completed,
         });
       } catch (err) {
@@ -57,7 +61,9 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
 
   const handleCancel = () => {
     setEditTitle(todo.title);
-    setEditDueDate(todo.due_date || '');
+    setEditIsAllDay(todo.is_all_day);
+    setEditStartDate(todo.start_date || '');
+    setEditEndDate(todo.end_date || '');
     setIsEditing(false);
   };
 
@@ -70,30 +76,36 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return null;
-    const date = new Date(dateString);
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+  const formatDateTime = (startDate, endDate, isAllDay) => {
+    if (!startDate) return null;
 
-    today.setHours(0, 0, 0, 0);
-    tomorrow.setHours(0, 0, 0, 0);
-    const targetDate = new Date(date);
-    targetDate.setHours(0, 0, 0, 0);
+    const start = new Date(startDate);
+    const end = new Date(endDate);
 
-    if (targetDate.getTime() === today.getTime()) {
-      return { text: '오늘', color: 'text-red-600' };
-    } else if (targetDate.getTime() === tomorrow.getTime()) {
-      return { text: '내일', color: 'text-orange-600' };
+    if (isAllDay) {
+      const startMonth = start.getMonth() + 1;
+      const startDay = start.getDate();
+      const endMonth = end.getMonth() + 1;
+      const endDay = end.getDate();
+
+      if (startMonth === endMonth && startDay === endDay) {
+        return { text: `${startMonth}월 ${startDay}일`, color: 'text-gray-600' };
+      }
+      return { text: `${startMonth}월 ${startDay}일 ~ ${endMonth}월 ${endDay}일`, color: 'text-gray-600' };
     } else {
-      const month = date.getMonth() + 1;
-      const day = date.getDate();
-      return { text: `${month}월 ${day}일`, color: 'text-gray-600' };
+      const formatTime = (date) => {
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${month}/${day} ${hours}:${minutes}`;
+      };
+
+      return { text: `${formatTime(start)} ~ ${formatTime(end)}`, color: 'text-gray-600' };
     }
   };
 
-  const dueDate = formatDate(todo.due_date);
+  const dateTimeInfo = formatDateTime(todo.start_date, todo.end_date, todo.is_all_day);
 
   if (isEditing) {
     return (
@@ -107,13 +119,41 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
           className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           maxLength={200}
         />
-        <input
-          type="date"
-          value={editDueDate}
-          onChange={(e) => setEditDueDate(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={editIsAllDay}
+            onChange={(e) => setEditIsAllDay(e.target.checked)}
+            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+          />
+          <span className="text-sm text-gray-700">하루종일</span>
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="text-xs text-gray-600">
+              {editIsAllDay ? '시작 날짜' : '시작 날짜/시간'}
+            </label>
+            <input
+              type={editIsAllDay ? 'date' : 'datetime-local'}
+              value={editIsAllDay ? editStartDate?.split('T')[0] : editStartDate?.slice(0, 16)}
+              onChange={(e) => setEditStartDate(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-gray-600">
+              {editIsAllDay ? '종료 날짜' : '종료 날짜/시간'}
+            </label>
+            <input
+              type={editIsAllDay ? 'date' : 'datetime-local'}
+              value={editIsAllDay ? editEndDate?.split('T')[0] : editEndDate?.slice(0, 16)}
+              onChange={(e) => setEditEndDate(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
         <div className="flex gap-2">
           <button
             type="button"
@@ -159,9 +199,9 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
         >
           {todo.title}
         </p>
-        {dueDate && (
-          <p className={`text-xs mt-1 ${dueDate.color}`}>
-            {dueDate.text}
+        {dateTimeInfo && (
+          <p className={`text-xs mt-1 ${dateTimeInfo.color}`}>
+            {dateTimeInfo.text}
           </p>
         )}
       </div>

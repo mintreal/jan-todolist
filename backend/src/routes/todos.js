@@ -8,16 +8,10 @@ const router = express.Router();
 // GET /api/todos - 할일 목록 조회
 router.get('/', auth, getTodos);
 
-// YYYY-MM-DD 형식인지 확인하고, 오늘 이후의 날짜인지 검증하는 커스텀 밸리데이터
-const isValidDate = (value) => {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-      return false; // 기본 형식 검사
-    }
+const isValidDateTime = (value) => {
     const inputDate = new Date(value);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // 오늘 날짜의 시작으로 설정
-  
-    return inputDate >= today;
+    const now = new Date();
+    return inputDate >= now;
   };
 
 // POST /api/todos - 할일 생성
@@ -28,10 +22,20 @@ router.post(
     body('title')
       .notEmpty().withMessage('제목은 비워둘 수 없습니다')
       .isLength({ max: 200 }).withMessage('제목은 200자를 초과할 수 없습니다'),
-    body('due_date')
-      .notEmpty().withMessage('기한은 비워둘 수 없습니다')
-      .isISO8601().withMessage('유효한 날짜 형식이 아닙니다 (YYYY-MM-DD)')
-      .custom(isValidDate).withMessage('과거 날짜를 선택할 수 없습니다'),
+    body('is_all_day')
+      .isBoolean().withMessage('하루종일 여부는 boolean 값이어야 합니다'),
+    body('start_date')
+      .notEmpty().withMessage('시작 날짜는 비워둘 수 없습니다')
+      .isISO8601().withMessage('유효한 날짜 형식이 아닙니다'),
+    body('end_date')
+      .notEmpty().withMessage('종료 날짜는 비워둘 수 없습니다')
+      .isISO8601().withMessage('유효한 날짜 형식이 아닙니다')
+      .custom((endDate, { req }) => {
+        if (new Date(endDate) <= new Date(req.body.start_date)) {
+          throw new Error('종료 날짜는 시작 날짜보다 이후여야 합니다');
+        }
+        return true;
+      }),
   ],
   createTodo // 3. 컨트롤러 실행
 );
@@ -43,24 +47,37 @@ router.put(
     [
         body('title')
             .optional()
-            .if(body('title').exists()) // Only validate if title is present
+            .if(body('title').exists())
             .isLength({ max: 200 }).withMessage('제목은 200자를 초과할 수 없습니다'),
-        body('due_date')
-            .optional({ checkFalsy: true })
-            .if(body('due_date').exists()) // Only validate if due_date is present
-            .isISO8601().withMessage('유효한 날짜 형식이 아닙니다 (YYYY-MM-DD)')
-            .custom(isValidDate).withMessage('과거 날짜를 선택할 수 없습니다'),
+        body('is_all_day')
+            .optional()
+            .if(body('is_all_day').exists())
+            .isBoolean().withMessage('하루종일 여부는 boolean 값이어야 합니다'),
+        body('start_date')
+            .optional()
+            .if(body('start_date').exists())
+            .isISO8601().withMessage('유효한 날짜 형식이 아닙니다'),
+        body('end_date')
+            .optional()
+            .if(body('end_date').exists())
+            .isISO8601().withMessage('유효한 날짜 형식이 아닙니다')
+            .custom((endDate, { req }) => {
+                if (req.body.start_date && new Date(endDate) <= new Date(req.body.start_date)) {
+                    throw new Error('종료 날짜는 시작 날짜보다 이후여야 합니다');
+                }
+                return true;
+            }),
         body('is_completed')
             .optional()
-            .if(body('is_completed').exists()) // Only validate if is_completed is present
+            .if(body('is_completed').exists())
             .isBoolean().withMessage('is_completed는 boolean 값이어야 합니다'),
     ],
-    (req, res, next) => { // Custom middleware to check validation results
+    (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ error: errors.array()[0].msg });
         }
-        next(); // Pass control to the controller if no errors
+        next();
     },
     updateTodo
 );

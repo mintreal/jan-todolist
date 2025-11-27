@@ -15,13 +15,15 @@ const createTodo = async (req, res) => {
 
   try {
     // 2. 데이터 추출
-    const { title, due_date } = req.body;
+    const { title, is_all_day, start_date, end_date } = req.body;
     const { userId } = req.user; // 인증 미들웨어에서 설정된 사용자 ID
 
     // 3. 모델을 통해 데이터베이스에 할일 생성
     const newTodo = await todoModel.create({
       title,
-      due_date,
+      is_all_day,
+      start_date,
+      end_date,
       user_id: userId,
     });
 
@@ -60,7 +62,7 @@ const updateTodo = async (req, res) => {
   try {
     const { id } = req.params;
     const { userId } = req.user;
-    const { title, due_date, is_completed } = req.body;
+    const { title, is_all_day, start_date, end_date, is_completed } = req.body;
 
     // 1. 할일 존재 여부 확인
     const todo = await todoModel.findById(id);
@@ -74,7 +76,7 @@ const updateTodo = async (req, res) => {
     }
 
     // 3. 데이터 수정
-    const updatedTodo = await todoModel.update(id, { title, due_date, is_completed });
+    const updatedTodo = await todoModel.update(id, { title, is_all_day, start_date, end_date, is_completed });
 
     res.status(200).json(updatedTodo);
   } catch (error) {

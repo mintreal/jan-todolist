@@ -42,7 +42,9 @@ CREATE TABLE todos (
   user_id INTEGER NOT NULL,
   title VARCHAR(200) NOT NULL,
   is_completed BOOLEAN DEFAULT FALSE,
-  due_date DATE NOT NULL,
+  is_all_day BOOLEAN DEFAULT TRUE,
+  start_date TIMESTAMP NOT NULL,
+  end_date TIMESTAMP NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -60,8 +62,8 @@ CREATE TABLE todos (
 -- 사용자별 할일 조회 최적화
 CREATE INDEX idx_todos_user_id ON todos(user_id);
 
--- 기한별 정렬 최적화
-CREATE INDEX idx_todos_due_date ON todos(due_date);
+-- 시작 날짜별 정렬 최적화
+CREATE INDEX idx_todos_start_date ON todos(start_date);
 
 -- ============================================
 -- 5. 테이블 및 컬럼 코멘트 (문서화)
@@ -81,7 +83,9 @@ COMMENT ON COLUMN todos.id IS '할일 고유 식별자';
 COMMENT ON COLUMN todos.user_id IS '소유자 (users.id 참조)';
 COMMENT ON COLUMN todos.title IS '할일 제목 (1-200자)';
 COMMENT ON COLUMN todos.is_completed IS '완료 여부 (true/false)';
-COMMENT ON COLUMN todos.due_date IS '기한 (날짜만, 시간 제외)';
+COMMENT ON COLUMN todos.is_all_day IS '하루종일 여부 (true: 날짜만, false: 날짜+시간)';
+COMMENT ON COLUMN todos.start_date IS '시작 날짜/시간';
+COMMENT ON COLUMN todos.end_date IS '종료 날짜/시간';
 COMMENT ON COLUMN todos.created_at IS '생성일시';
 COMMENT ON COLUMN todos.updated_at IS '최종 수정일시';
 

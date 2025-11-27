@@ -7,13 +7,13 @@ const { query } = require('../config/database');
 const todoModel = {
   /**
    * 새로운 할일 생성
-   * @param {Object} todoData - 할일 데이터 { title, due_date, user_id }
+   * @param {Object} todoData - 할일 데이터 { title, is_all_day, start_date, end_date, user_id }
    * @returns {Promise<Object>} 생성된 할일 객체
    */
-  async create({ title, due_date, user_id }) {
+  async create({ title, is_all_day, start_date, end_date, user_id }) {
     const result = await query(
-      'INSERT INTO todos (title, due_date, user_id) VALUES ($1, $2, $3) RETURNING *',
-      [title, due_date, user_id]
+      'INSERT INTO todos (title, is_all_day, start_date, end_date, user_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [title, is_all_day, start_date, end_date, user_id]
     );
     return result.rows[0];
   },
@@ -28,8 +28,7 @@ const todoModel = {
       SELECT * FROM todos
       WHERE user_id = $1
       ORDER BY
-        CASE WHEN due_date IS NULL THEN 1 ELSE 0 END,
-        due_date ASC,
+        start_date ASC,
         created_at DESC
     `;
     const result = await query(sql, [userId]);
@@ -49,7 +48,7 @@ const todoModel = {
   /**
    * 할일 수정
    * @param {number} id - 할일 ID
-   * @param {Object} data - 수정할 데이터 { title, due_date, is_completed }
+   * @param {Object} data - 수정할 데이터 { title, is_all_day, start_date, end_date, is_completed }
    * @returns {Promise<Object>} 수정된 할일 객체
    */
   async update(id, data) {
@@ -62,9 +61,17 @@ const todoModel = {
       fields.push(`title = $${paramIndex++}`);
       values.push(data.title);
     }
-    if (data.due_date !== undefined) {
-      fields.push(`due_date = $${paramIndex++}`);
-      values.push(data.due_date);
+    if (data.is_all_day !== undefined) {
+      fields.push(`is_all_day = $${paramIndex++}`);
+      values.push(data.is_all_day);
+    }
+    if (data.start_date !== undefined) {
+      fields.push(`start_date = $${paramIndex++}`);
+      values.push(data.start_date);
+    }
+    if (data.end_date !== undefined) {
+      fields.push(`end_date = $${paramIndex++}`);
+      values.push(data.end_date);
     }
     if (data.is_completed !== undefined) {
       fields.push(`is_completed = $${paramIndex++}`);
@@ -75,7 +82,7 @@ const todoModel = {
       // 수정할 내용이 없으면 기존 데이터를 반환하거나 에러 처리
       return this.findById(id);
     }
-    
+
     // updated_at 필드 추가
     fields.push(`updated_at = CURRENT_TIMESTAMP`);
 
