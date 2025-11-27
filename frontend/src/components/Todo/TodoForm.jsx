@@ -61,15 +61,20 @@ function TodoForm({ onAdd }) {
 
         <div>
           <label htmlFor="due_date" className="block text-sm font-medium text-gray-700 mb-1">
-            기한 (선택사항)
+            기한
           </label>
           <input
             id="due_date"
             type="date"
-            {...register('due_date')}
+            {...register('due_date', {
+              required: '기한을 선택해주세요',
+            })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             disabled={isLoading}
           />
+          {errors.due_date && (
+            <p className="mt-1 text-sm text-red-600">{errors.due_date.message}</p>
+          )}
         </div>
 
         {error && (

@@ -29,7 +29,7 @@ router.post(
       .notEmpty().withMessage('제목은 비워둘 수 없습니다')
       .isLength({ max: 200 }).withMessage('제목은 200자를 초과할 수 없습니다'),
     body('due_date')
-      .optional({ checkFalsy: true }) // 값이 없거나, null, "" 이면 통과
+      .notEmpty().withMessage('기한은 비워둘 수 없습니다')
       .isISO8601().withMessage('유효한 날짜 형식이 아닙니다 (YYYY-MM-DD)')
       .custom(isValidDate).withMessage('과거 날짜를 선택할 수 없습니다'),
   ],

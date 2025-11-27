@@ -21,7 +21,7 @@ const createTodo = async (req, res) => {
     // 3. 모델을 통해 데이터베이스에 할일 생성
     const newTodo = await todoModel.create({
       title,
-      due_date: due_date || null, // due_date가 없으면 null로 설정
+      due_date,
       user_id: userId,
     });
 

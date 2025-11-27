@@ -104,7 +104,6 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
           value={editTitle}
           onChange={(e) => setEditTitle(e.target.value)}
           onKeyDown={handleKeyDown}
-          onBlur={handleSave}
           className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           maxLength={200}
         />
@@ -115,10 +114,24 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
           onKeyDown={handleKeyDown}
           className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <div className="flex gap-2 text-xs text-gray-500">
-          <span>Enter: 저장</span>
-          <span>•</span>
-          <span>ESC: 취소</span>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={handleSave}
+            className="flex-1 bg-blue-600 text-white py-1 px-3 rounded text-sm hover:bg-blue-700"
+          >
+            저장
+          </button>
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="flex-1 bg-gray-300 text-gray-700 py-1 px-3 rounded text-sm hover:bg-gray-400"
+          >
+            취소
+          </button>
+        </div>
+        <div className="text-xs text-gray-500">
+          <span>Enter: 저장 • ESC: 취소</span>
         </div>
       </div>
     );
