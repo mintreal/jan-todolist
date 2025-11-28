@@ -98,3 +98,5 @@ config/credentials.yml
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+
+logs/
