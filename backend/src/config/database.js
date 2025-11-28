@@ -9,19 +9,24 @@ if (!databaseUrl) {
 }
 
 // PostgreSQL 연결 풀 설정
+// Vercel Serverless 환경에 최적화된 설정
 const pool = new Pool({
   connectionString: databaseUrl,
-  // 연결 풀 관련 설정
-  max: 20, // 최대 연결 수
-  min: 5,  // 최소 연결 수
-  idleTimeoutMillis: 30000, // 연결이 idle 상태로 유지될 수 있는 최대 시간 (밀리초)
-  connectionTimeoutMillis: 2000, // 연결 시도 시간 초과 (밀리초)
+  // Serverless 환경: 각 function instance당 1개 연결만
+  max: process.env.NODE_ENV === 'production' ? 1 : 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000, // Serverless에서는 더 긴 timeout 필요
+  // Supabase SSL 설정
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
 // 연결 오류 핸들링
 pool.on('error', (err, client) => {
   console.error('Unexpected error on idle client', err);
-  process.exit(-1);
+  // Serverless 환경에서는 process.exit 대신 에러 로깅만
+  if (process.env.NODE_ENV !== 'production') {
+    process.exit(-1);
+  }
 });
 
 // 연결 테스트 함수
