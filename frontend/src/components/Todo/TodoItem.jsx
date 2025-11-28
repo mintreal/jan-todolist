@@ -21,6 +21,7 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
       await onToggle(todo.id);
     } catch (err) {
       console.error('Failed to toggle todo:', err);
+      alert(err.message || '할일 상태 변경에 실패했습니다');
     }
   };
 
@@ -31,6 +32,7 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
         await onDelete(todo.id);
       } catch (err) {
         console.error('Failed to delete todo:', err);
+        alert(err.message || '할일 삭제에 실패했습니다');
         setIsDeleting(false);
       }
     }
@@ -52,11 +54,14 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
           end_date: editEndDate,
           is_completed: todo.is_completed,
         });
+        setIsEditing(false);
       } catch (err) {
         console.error('Failed to update todo:', err);
+        alert(err.message || '할일 수정에 실패했습니다');
       }
+    } else {
+      setIsEditing(false);
     }
-    setIsEditing(false);
   };
 
   const handleCancel = () => {
@@ -124,7 +129,8 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
             type="checkbox"
             checked={editIsAllDay}
             onChange={(e) => setEditIsAllDay(e.target.checked)}
-            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+            className="w-4 h-4 rounded"
+            style={{ accentColor: 'var(--color-primary)' }}
           />
           <span className="text-sm text-gray-700">하루종일</span>
         </label>
@@ -138,7 +144,8 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
               value={editIsAllDay ? editStartDate?.split('T')[0] : editStartDate?.slice(0, 16)}
               onChange={(e) => setEditStartDate(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2"
+              style={{ '--tw-ring-color': 'var(--color-primary)' }}
             />
           </div>
           <div>
@@ -150,7 +157,8 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
               value={editIsAllDay ? editEndDate?.split('T')[0] : editEndDate?.slice(0, 16)}
               onChange={(e) => setEditEndDate(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2"
+              style={{ '--tw-ring-color': 'var(--color-primary)' }}
             />
           </div>
         </div>
@@ -158,7 +166,10 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
           <button
             type="button"
             onClick={handleSave}
-            className="flex-1 bg-blue-600 text-white py-1 px-3 rounded text-sm hover:bg-blue-700"
+            className="flex-1 text-white py-1 px-3 rounded text-sm transition-colors"
+            style={{ backgroundColor: 'var(--color-primary)' }}
+            onMouseOver={(e) => e.target.style.backgroundColor = 'var(--color-primary-hover)'}
+            onMouseOut={(e) => e.target.style.backgroundColor = 'var(--color-primary)'}
           >
             저장
           </button>
@@ -187,7 +198,8 @@ function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
         type="checkbox"
         checked={todo.is_completed}
         onChange={handleToggle}
-        className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer flex-shrink-0"
+        className="w-5 h-5 rounded cursor-pointer flex-shrink-0"
+        style={{ accentColor: 'var(--color-primary)' }}
       />
       <div className="flex-1 min-w-0 cursor-pointer" onClick={handleEdit}>
         <p

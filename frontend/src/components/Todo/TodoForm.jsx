@@ -57,7 +57,8 @@ function TodoForm({ onAdd }) {
               },
             })}
             onKeyDown={handleKeyDown}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
+            style={{ '--tw-ring-color': 'var(--color-primary)' }}
             placeholder="할일을 입력하세요"
             disabled={isLoading}
           />
@@ -71,7 +72,8 @@ function TodoForm({ onAdd }) {
             <input
               type="checkbox"
               {...register('is_all_day')}
-              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+              className="w-4 h-4 rounded"
+              style={{ accentColor: 'var(--color-primary)' }}
               disabled={isLoading}
             />
             <span className="text-sm font-medium text-gray-700">하루종일</span>
@@ -89,7 +91,8 @@ function TodoForm({ onAdd }) {
               {...register('start_date', {
                 required: '시작 날짜를 선택해주세요',
               })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
+              style={{ '--tw-ring-color': 'var(--color-primary)' }}
               disabled={isLoading}
             />
             {errors.start_date && (
@@ -107,7 +110,8 @@ function TodoForm({ onAdd }) {
               {...register('end_date', {
                 required: '종료 날짜를 선택해주세요',
               })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
+              style={{ '--tw-ring-color': 'var(--color-primary)' }}
               disabled={isLoading}
             />
             {errors.end_date && (
@@ -125,7 +129,16 @@ function TodoForm({ onAdd }) {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+          style={{
+            backgroundColor: 'var(--color-primary)',
+          }}
+          onMouseOver={(e) => {
+            if (!isLoading) e.target.style.backgroundColor = 'var(--color-primary-hover)';
+          }}
+          onMouseOut={(e) => {
+            if (!isLoading) e.target.style.backgroundColor = 'var(--color-primary)';
+          }}
         >
           {isLoading ? '추가 중...' : '추가하기'}
         </button>

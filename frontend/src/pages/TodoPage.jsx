@@ -19,7 +19,10 @@ function TodoPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div
+            className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto"
+            style={{ borderColor: 'var(--color-primary)' }}
+          ></div>
           <p className="mt-4 text-gray-600">로딩 중...</p>
         </div>
       </div>
@@ -36,6 +39,12 @@ function TodoPage() {
               {user && (
                 <span className="text-sm text-gray-600">{user.name}님</span>
               )}
+              <button
+                onClick={() => navigate('/settings')}
+                className="text-sm text-gray-600 hover:text-gray-900"
+              >
+                ⚙️ 설정
+              </button>
               <button
                 onClick={handleLogout}
                 className="text-sm text-gray-600 hover:text-gray-900"

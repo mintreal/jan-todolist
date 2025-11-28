@@ -3,8 +3,12 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('../../swagger/swagger.json'); // Adjust path as necessary
-console.log('Swagger Document Loaded:', !!swaggerDocument); // Diagnostic log
+const swaggerDocument = require('../../swagger/swagger.json');
+const logger = require('./utils/logger');
+const requestLogger = require('./middlewares/requestLogger');
+const { errorHandler, notFoundHandler } = require('./middlewares/errorHandler');
+
+logger.info('Swagger Document Loaded:', { loaded: !!swaggerDocument });
 
 const app = express();
 
@@ -18,6 +22,9 @@ app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// HTTP 요청 로깅
+app.use(requestLogger);
 
 const authRoutes = require('./routes/auth');
 const todoRoutes = require('./routes/todos');
@@ -36,20 +43,10 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/auth', authRoutes);
 app.use('/api/todos', todoRoutes);
 
-app.use((req, res) => {
-  res.status(404).json({
-    error: 'Not Found',
-    message: `Cannot ${req.method} ${req.path}`,
-    path: req.path
-  });
-});
+// 404 핸들러
+app.use(notFoundHandler);
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error',
-    status: err.status || 500
-  });
-});
+// 전역 에러 핸들러
+app.use(errorHandler);
 
 module.exports = app;
